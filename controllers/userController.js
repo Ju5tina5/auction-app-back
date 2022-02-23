@@ -28,8 +28,8 @@ module.exports = {
         res.send({success: true, message: 'User registered'})
     },
     logOutUser: (req, res) => {
-        req.session.destroy(() => {
-            res.redirect('/')
+        req.session.destroy( () => {
+            res.send({success: true})
         })
     },
     decreaseUserMoney: async (req, res, next) => {

@@ -5,10 +5,10 @@ const router = express.Router();
 
 const {loginUser, registerUser, logOutUser, decreaseUserMoney} =  require('../controllers/userController');
 const {getAllAuctions, getSingleAuction, addNewAuction, auctionEnd, auctionBidReceive} = require('../controllers/auctionController');
-const {route} = require("express/lib/router");
+
 
 //user paths
-router.get('/logOut', logOutUser);
+router.get('/logout', logOutUser);
 router.post('/register', middleWare.validateUser, registerUser)
 router.post('/login', middleWare.validateUser, loginUser)
 // auction paths
