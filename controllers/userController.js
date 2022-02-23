@@ -1,9 +1,34 @@
+const bcrypt = require('bcrypt');
+const userSchema = require('../models/userSchema');
+
 module.exports = {
-    loginUser: (req, res) => {
-
+    loginUser: async (req, res) => {
+        const {user_name, password} = req.body;
+        const userExists = await userSchema.findOne({user_name})
+        if (!userExists) return res.send({success: false, message: "bad credentials"})
+        const passMatch = await bcrypt.compare(password, userExists.password)
+        if (passMatch) {
+            req.session.user = userExists.user_name
+            return res.send({success: true, message: "Successfully logged in"})
+        }
+        res.send({success: false, message: "bad credentials"})
     },
-    registerUser: (req, res) => {
+    registerUser: async (req, res) => {
+        const {user_name, password} = req.body;
 
+        const userExists = await userSchema.findOne({user_name})
+        if (userExists) return res.send({success: false, message: "User is already taken"})
+
+        const user = new userSchema();
+        user.user_name = data.user_name;
+        user.password = bcrypt.hash(data.password, 10);
+        await user.save();
+
+        res.send({success: true, message: 'User registered'})
+    },
+    logOutUser: (req, res) => {
+        req.session = null;
+        res.send({success: true, message: "Logged out"})
     }
 }
 
