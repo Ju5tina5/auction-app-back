@@ -9,6 +9,7 @@ module.exports = {
         const passMatch = await bcrypt.compare(password, userExists.password)
         if (passMatch) {
             req.session.user = userExists.user_name
+            req.session.save();
             return res.send({success: true, message: "Successfully logged in"})
         }
         res.send({success: false, message: "bad credentials"})
@@ -27,8 +28,15 @@ module.exports = {
         res.send({success: true, message: 'User registered'})
     },
     logOutUser: (req, res) => {
-        req.session = null;
-        res.send({success: true, message: "Logged out"})
+        req.session.destroy(() => {
+            res.redirect('/')
+        })
+    },
+    decreaseUserMoney: async (req, res, next) => {
+        const {amount} = req.body;
+        const {user_name} = req.session;
+        await userSchema.findOneAndUpdate({user_name}, {$inc: {money: -amount}})
+        next();
     }
 }
 

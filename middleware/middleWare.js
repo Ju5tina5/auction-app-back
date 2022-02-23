@@ -1,4 +1,3 @@
-
 module.exports = {
     validateUser: (req, res, next) => {
         const {user_name, password, passwordTwo} = req.body
@@ -15,7 +14,8 @@ module.exports = {
         const {user_name} = req.session;
         if(!user_name) return res.send({success: false, message: 'Not logged in'})
         next();
-    }
+    },
+
 }
 
 

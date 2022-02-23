@@ -20,10 +20,7 @@ module.exports = {
             return x.price
         })
         let prevHighest = Math.max(...bid_amounts);
-        if(prevHighest > amount) {
-            return res.send({success: false, message: "Bid amount is less than highest bid"})
-        }
-
+        if(prevHighest > amount) return res.send({success: false, message: "Bid amount is less than highest bid"})
         next();
     }
 }

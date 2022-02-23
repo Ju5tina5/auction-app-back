@@ -47,19 +47,17 @@ module.exports = {
             bid_time: Date.now()
         }
 
-        let auction = await auctionSchema.findOneAndUpdate({_id}, {$push: {bids: bid}}, {new: true});
+        let auction = await auctionSchema.findOneAndUpdate({_id}, {$push: {bids: bid}, $set: {start_Price: bid.amount}}, {new: true});
 
-        if(auction.start_Price < amount){
-            auction = await auctionSchema.findOneAndUpdate({_id}, {$set: {start_Price: amount}}, {new: true});
-        }
+        let prevHighest = auction.bids[auction.bids.length - 2];
+
+        await userSchema.findOneAndUpdate({user_name: prevHighest.user_name}, {$inc: {money: prevHighest.price}});
 
         return  res.send({success: true, auction})
-
     },
     auctionEnd: async (req, res) => {
         const {id: _id} = req.params;
         const auction = await auctionSchema.findOneAndUpdate({_id}, {$set: {isEnded: true}}, {new: true});
-
         res.send({success: true, auction})
     }
 }
