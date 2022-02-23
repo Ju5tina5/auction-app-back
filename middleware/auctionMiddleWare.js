@@ -15,12 +15,9 @@ module.exports = {
         const {id: _id, amount} = req.body;
         if(!Number(amount)) return res.send({success: false, message: 'Bid Amount should be a number'});
         const auction = await auctionSchema.findOne({_id});
-        if(auction.bids.find(x => x.price === amount)) return res.send({success: false, message: "Bid amount already exists"})
-        const bid_amounts = auction.bids( x => {
-            return x.price
-        })
-        let prevHighest = Math.max(...bid_amounts);
-        if(prevHighest > amount) return res.send({success: false, message: "Bid amount is less than highest bid"})
+        let currentHighest = auction.bids[auction.bids.length - 1];
+        if(currentHighest === amount) return res.send({success: false, message: "Bid amount already exists"})
+        if(currentHighest > amount) return res.send({success: false, message: "Bid amount is less than highest bid"})
         next();
     }
 }
