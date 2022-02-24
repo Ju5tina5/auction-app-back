@@ -5,7 +5,15 @@ module.exports = {
     getAllAuctions: async (req, res) => {
         try {
             const auctions = await auctionSchema.find();
-            return res.send({success: true, auctions})
+            let sortedAuctions = [];
+            for (let i = 0; i < auctions.length; i++) {
+                if(auctions[i].isEnded){
+                    sortedAuctions.push(auctions[i])
+                }else{
+                    sortedAuctions.unshift(auctions[i])
+                }
+            }
+            return res.send({success: true, sortedAuctions})
         } catch (e) {
             return res.send({success: false, message: e})
         }
@@ -32,7 +40,7 @@ module.exports = {
 
             await auction.save();
 
-            return res.send({success: true, auction})
+            return res.send({success: true, message: 'Auction successfully published'})
         } catch (e) {
             return res.send({success: false, message: e})
         }

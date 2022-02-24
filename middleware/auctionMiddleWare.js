@@ -6,9 +6,9 @@ module.exports = {
 
         if(!picture.includes('http')) return res.send({success: false, message: 'Picture link not provided'})
         if(title.length < 20) return res.send({success: false, message: 'Title too short'})
-        if(title.length < 500) return res.send({success: false, message: 'Title too long'})
+        if(title.length > 500) return res.send({success: false, message: 'Title too long'})
         if(typeof start_Price !== 'number') return res.send({success: false, message: 'Price should be a number'})
-        if(end_time.getMonth() && end_time > Date.now()) return res.send({success: false, message: 'Price should be a number'})
+        if( Date.parse(end_time) && (end_time + Date.now()) < Date.now()) return res.send({success: false, message: "End time can't be in the past"})
         next()
     },
     validateBidAmount: async (req, res, next) => {
