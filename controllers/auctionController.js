@@ -27,6 +27,11 @@ module.exports = {
             return res.send({success: false, message: e})
         }
     },
+    getAllUserBids: async (req, res) => {
+        const {user_name} = req.session;
+        res.send({success: true, user_name})
+
+    },
     addNewAuction: async (req, res) => {
         const {picture, title, start_Price, end_time} = req.body;
         const {user_name} = req.session;

@@ -16,8 +16,6 @@ module.exports = {
     registerUser: async (req, res) => {
         const {user_name, password} = req.body;
 
-        console.log(req.body)
-
         const userExists = await userSchema.findOne({user_name})
         if (userExists) return res.send({success: false, message: "User name is already taken"})
 
@@ -32,6 +30,13 @@ module.exports = {
         req.session.destroy( () => {
             res.send({success: true})
         })
+    },
+    updateUserAvatar: async (req, res) => {
+        const {avatar} = req.body;
+        if(!avatar.includes('http')) res.send({success: false, message: 'Link not provided'});
+        const {user_name} = req.session;
+        const updatedUser = await userSchema.findOneAndUpdate({user_name}, {$set: {avatar: avatar}}, {new: true});
+        res.send({success: true, user: {user_name: updatedUser.user_name, avatar: updatedUser.avatar, money: updatedUser.money}});
     },
     decreaseUserMoney: async (req, res, next) => {
         const {amount} = req.body;
