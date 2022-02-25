@@ -1,12 +1,16 @@
+const { createServer } = require("http");
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const session = require('express-session');
 const router = require('./routes/main');
 require('dotenv').config();
+const socketIo = require("socket.io");
+const server = createServer(app);
+const io = socketIo(server, { cors: { origin: "*" } });
 
 app.use(express.json());
-app.listen(4000);
+server.listen(4000);
 
 app.use((req, res, next) => {
     // Website you wish to allow to connect
@@ -28,6 +32,11 @@ app.use(session({
     cookie: { secure: false }
 }))
 
+app.use((req, res, next) => {
+    req.io = io;
+    return next();
+});
+
 mongoose.connect(process.env.DATABASE_CONNECT)
     .then(res => {
         console.log('Connected to DB')
@@ -36,3 +45,4 @@ mongoose.connect(process.env.DATABASE_CONNECT)
 })
 
 app.use('/', router);
+

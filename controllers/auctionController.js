@@ -8,13 +8,14 @@ module.exports = {
             const auctions = await auctionSchema.find();
             let sortedAuctions = [];
             for (let i = 0; i < auctions.length; i++) {
-                if(auctions[i].isEnded){
+                if (auctions[i].isEnded) {
                     sortedAuctions.push(auctions[i])
-                }else{
+                } else {
                     sortedAuctions.unshift(auctions[i])
                 }
             }
-            return res.send({success: true, sortedAuctions})
+            req.io.emit('allAuctions', {sortedAuctions})
+            return  res.send({success: true})
         } catch (e) {
             return res.send({success: false, message: e})
         }
@@ -31,10 +32,10 @@ module.exports = {
     getAllUserBids: async (req, res) => {
         const {user_name} = req.session;
         let bids = [];
-        const auctions = await auctionSchema.find({}, { title: 1, bids: 1 });
-        await auctions.map( x =>
-            x.bids.map( y => {
-                if(y.user_name === user_name){
+        const auctions = await auctionSchema.find({}, {title: 1, bids: 1});
+        await auctions.map(x =>
+            x.bids.map(y => {
+                if (y.user_name === user_name) {
                     bids.push({auction_title: x.title, bid: y})
                 }
             })
@@ -59,13 +60,13 @@ module.exports = {
 
             let createAuction;
 
-            auction.save().then( res => {
+            auction.save().then(res => {
                 createAuction = res
             });
 
-            const job = schedule.scheduleJob(end_time, async function(){
+            const job = schedule.scheduleJob(end_time, async function () {
                 const auction = await auctionSchema.findOneAndUpdate({_id: createAuction._id}, {$set: {isEnded: true}})
-                if(auction.bids.length > 0){
+                if (auction.bids.length > 0) {
                     let oldMoney = await userSchema.findOne({user_name: auction.owner_name}, {money: 1})
                     let money = await oldMoney.money + auction.start_Price;
                     await userSchema.findOneAndUpdate({user_name: auction.owner_name}, {$set: {money: Number(money)}});
@@ -78,7 +79,7 @@ module.exports = {
     },
     auctionEnd: async (req, res) => {
         const auctions = await auctionSchema.find();
-        return  res.send({success: true, auctions})
+        return res.send({success: true, auctions})
     },
     auctionBidReceive: async (req, res) => {
         const {_id, amount} = req.body;
@@ -90,14 +91,18 @@ module.exports = {
             bid_time: Date.now()
         }
 
-        const auction = await auctionSchema.findOneAndUpdate({_id}, {$push: {bids: bid}, $set: {start_Price: bid.price}}, {new: true});
+        const auction = await auctionSchema.findOneAndUpdate({_id}, {
+            $push: {bids: bid},
+            $set: {start_Price: bid.price}
+        }, {new: true});
 
-         if(auction.bids.length > 1){
+        if (auction.bids.length > 1) {
             let prevHighest = await auction.bids[auction.bids.length - 2];
             await userSchema.findOneAndUpdate({user_name: prevHighest.user_name}, {$inc: {money: prevHighest.price}}, {new: true});
         }
 
-        const user = await userSchema.findOne({user_name}, {money: 1, user_name: 1, avatar: 1})
-        return res.send({success: true, auction, user})
+        const user = await userSchema.findOne({user_name}, {money: 1, user_name: 1, avatar: 1}, {new: true})
+        res.send({success: true, user});
+        return req.io.emit("dibAdded", {auction})
     },
 }

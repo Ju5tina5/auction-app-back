@@ -17,5 +17,8 @@
     "node-schedule": "^2.1.0",
     "nodemon": "^2.0.15",
     "socket-io": "^1.0.0"
+  },
+  "devDependencies": {
+    "socket.io": "^4.4.1"
   }
 }
