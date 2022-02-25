@@ -4,7 +4,7 @@ const auctionMiddleWare = require('../middleware/auctionMiddleWare');
 const router = express.Router();
 
 const {loginUser, registerUser, logOutUser, decreaseUserMoney, updateUserAvatar} =  require('../controllers/userController');
-const {getAllAuctions, getSingleAuction, addNewAuction, auctionEnd, auctionBidReceive, getAllUserBids} = require('../controllers/auctionController');
+const {getAllAuctions, getSingleAuction, addNewAuction, auctionEnd, auctionBidReceive, getAllUserBids, deleteAuction} = require('../controllers/auctionController');
 
 
 //user paths
@@ -15,7 +15,8 @@ router.post('/updateAvatar', middleWare.validateUserSession, updateUserAvatar)
 // auction paths
 router.get('/getAuctions', getAllAuctions)
 router.get('/getSingleAuction/:id', getSingleAuction)
-router.get('/getUserBids', getAllUserBids)
+router.get('/getUserBids', middleWare.validateUserSession, getAllUserBids)
+router.get('/deleteAuction/:id', middleWare.validateUserSession, deleteAuction)
 router.get('/auctionEnded/:id', auctionEnd)
 router.post('/addNewAuction', middleWare.validateUserSession,  auctionMiddleWare.validateAuctionData, addNewAuction)
 router.post('/bidAction', middleWare.validateUserSession, auctionMiddleWare.validateBidAmount, decreaseUserMoney, auctionBidReceive)

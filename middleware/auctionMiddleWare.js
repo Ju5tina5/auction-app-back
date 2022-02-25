@@ -12,11 +12,11 @@ module.exports = {
         next()
     },
     validateBidAmount: async (req, res, next) => {
-        const {id: _id, amount} = req.body;
+        const { _id, amount} = req.body;
         if(!Number(amount)) return res.send({success: false, message: 'Bid Amount should be a number'});
         const auction = await auctionSchema.findOne({_id});
-        let currentHighest = auction.bids[auction.bids.length - 1];
-        if(currentHighest === amount) return res.send({success: false, message: "Bid amount already exists"})
+        let currentHighest = auction.start_Price;
+        if(Number(currentHighest) === Number(amount)) return res.send({success: false, message: "Bid amount already exists"})
         if(currentHighest > amount) return res.send({success: false, message: "Bid amount is less than highest bid"})
         next();
     }

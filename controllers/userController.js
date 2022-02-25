@@ -41,8 +41,13 @@ module.exports = {
     decreaseUserMoney: async (req, res, next) => {
         const {amount} = req.body;
         const {user_name} = req.session;
-        await userSchema.findOneAndUpdate({user_name}, {$inc: {money: -amount}})
+        let oldMoney = await userSchema.findOne({user_name}, {money: 1})
+        let money = oldMoney.money - Number(amount);
+        if(money < 0){
+            return res.send({success: false, message: 'Not enough money'})
+        }
+        await userSchema.findOneAndUpdate({user_name}, {$set: {money: money}})
         next();
-    }
+    },
 }
 
