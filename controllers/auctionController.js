@@ -65,7 +65,7 @@ module.exports = {
             });
 
             const job = schedule.scheduleJob(end_time, async function () {
-                const auction = await auctionSchema.findOneAndUpdate({_id: createAuction._id}, {$set: {isEnded: true}})
+                await auctionSchema.findOneAndUpdate({_id: createAuction._id}, {$set: {isEnded: true}});
                 if (auction.bids.length > 0) {
                     let oldMoney = await userSchema.findOne({user_name: auction.owner_name}, {money: 1})
                     let money = await oldMoney.money + auction.start_Price;
