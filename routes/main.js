@@ -17,7 +17,7 @@ router.get('/getAuctions', getAllAuctions)
 router.get('/getSingleAuction/:id', getSingleAuction)
 router.get('/getUserBids', middleWare.validateUserSession, getAllUserBids)
 router.get('/deleteAuction/:id', middleWare.validateUserSession, deleteAuction)
-router.get('/auctionEnded', auctionEnd)
+router.get('/auctionEnded/:id', auctionEnd)
 router.post('/addNewAuction', middleWare.validateUserSession,  auctionMiddleWare.validateAuctionData, addNewAuction)
 router.post('/bidAction', middleWare.validateUserSession, auctionMiddleWare.validateBidAmount, decreaseUserMoney, auctionBidReceive)
 

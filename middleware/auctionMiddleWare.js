@@ -8,6 +8,7 @@ module.exports = {
         if(title.length > 500) return res.send({success: false, message: 'Title too long'})
         if(typeof start_Price !== 'number') return res.send({success: false, message: 'Price should be a number'})
         if(Number(start_Price) <= 0) return res.send({success: false, message: `Starting Price can't be zero or below`})
+        //checking if end_time is a date and end time is more than time now
         if( Date.parse(end_time) && (end_time + Date.now()) < Date.now()) return res.send({success: false, message: "End time can't be in the past"})
         next()
     },

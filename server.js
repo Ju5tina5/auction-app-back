@@ -32,6 +32,8 @@ app.use(session({
     cookie: { secure: false }
 }))
 
+
+// use socket io
 app.use((req, res, next) => {
     req.io = io;
     return next();
